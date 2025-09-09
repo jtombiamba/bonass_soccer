@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "bonass-soccer"
+version = "0.1.0"
+description = ""
+authors = ["jtombi <james.tombi@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.1.4"
+environ = "^1.0"
+django-environ = "^0.11.2"
+numpy = "^2.2.1"
+phonenumbers = "^8.13.52"
+gunicorn = "^23.0.0"
+psycopg2-binary = "^2.9.10"
+pyyaml = "^6.0.2"
+django-nested-admin = "^4.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

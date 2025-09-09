@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+python /opt/app/manage.py collectstatic --noinput
+python /opt/app/manage.py migrate --noinput
+# python /opt/app/manage.py createsuperuser --noinput
+
+# Gunicorn will use gunicorn.conf.py as a config file
+# With computed max workers (CPU count * 2 + 1)
+# Can be overriden with WORKERS env var
+# https://docs.gunicorn.org/en/stable/design.html#how-many-workers
+/opt/venv/bin/gunicorn config.wsgi

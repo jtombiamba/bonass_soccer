@@ -1,0 +1,31 @@
+<!-- form.html -->
+<form id="dynamic-form" method="post">
+  {% for page in form.pages.all %}
+  <div class="page" data-page-id="{{ page.id }}">
+    <h2>{{ page.title }}</h2>
+
+    {% for question in page.questions.all %}
+    <div class="question"
+         data-question-id="{{ question.id }}"
+         {% if question.display_conditions.exists %}style="display:none"{% endif %}>
+
+      <!-- Render question based on type -->
+      {% if question.answer_type == 'BOOLEAN' %}
+        <input type="checkbox" name="q{{ question.id }}">
+
+      {% elif question.answer_type == 'RANGE' %}
+        <input type="range" name="q{{ question.id }}"
+               min="{{ question.range_min }}" max="{{ question.range_max }}">
+
+      {% elif question.answer_type == 'MULTIPLE_CHOICE' %}
+        {% for choice in question.choices.all %}
+          <input type="checkbox" name="q{{ question.id }}" value="{{ choice.id }}">
+        {% endfor %}
+
+      <!-- Add other question types -->
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</form>

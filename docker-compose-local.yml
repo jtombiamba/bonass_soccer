@@ -1,0 +1,63 @@
+version: '3'
+
+
+volumes:
+  static_volume:
+  postgres_data:
+
+services:
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: local
+    image: jtombi/bonass_soccer:latest
+    container_name: bonass_soccer_django
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+      - ENVIRONMENT=LOCAL
+      - DJANGO_SUPERUSER_PASSWORD=Azerty+12345
+      - DJANGO_SUPERUSER_EMAIL=admin@bp.com
+      - DJANGO_SUPERUSER_USERNAME=jtombi+1
+    depends_on:
+      - postgres
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    volumes:
+      - static_volume:/opt/app/staticfiles
+    ports:
+      - "5000:8000"
+    command: /start
+    cap_drop:
+      - SETGID
+      - SETUID
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: jtombi/fapfap_nginx:latest
+    volumes:
+      - static_volume:/opt/app/staticfiles
+    ports:
+      - "80:80"
+      #- "1337:80"
+    depends_on:
+      - django
+
+  postgres:
+    image: postgres:15-bullseye
+    container_name: postgres_local
+    hostname: postgres
+    env_file:
+      - ./.envs/.local/.postgres
+    volumes:
+      - ./docker/postgres/conf.d/postgresql.conf:/etc/postgresql/postgresql.conf:cached
+      - ./docker/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+      # - ./fixtures:/opt/app/fixtures:ro
+    ports:
+      - "5432:5432"

@@ -1,0 +1,38 @@
+<!-- templates/slider.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Example</title>
+    <style>
+        .slider-container {
+            margin: 20px;
+            text-align: center;
+        }
+        .slider {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <h1>Slider Example</h1>
+        <form method="post" action="{% url 'slider' %}">
+            {% csrf_token %}
+            <input type="range" id="slider" name="slider" min="0" max="100" value="50" class="slider">
+            <p>Value: <span id="slider-value">50</span></p>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const slider = document.getElementById('slider');
+        const sliderValue = document.getElementById('slider-value');
+
+        slider.addEventListener('input', function() {
+            sliderValue.textContent = slider.value;
+        });
+    </script>
+</body>
+</html>

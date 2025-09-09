@@ -1,0 +1,19 @@
+name: Weekly Reporting Workflow
+on:
+  user_join: true
+  schedule: "0 0 * * 1"  # Every Monday at midnight
+
+jobs:
+  data_collection:
+    name: Collect User Data
+    schedule: "every 5 minutes"
+    command: "python manage.py collect_stats"
+    timeout: 600
+    retries: 3
+
+  report_generation:
+    name: Generate Weekly Report
+    schedule: "0 3 * * 1"  # Monday 3 AM
+    command: "python manage.py generate_report"
+    depends_on:
+      - data_collection

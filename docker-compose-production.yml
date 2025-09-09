@@ -1,0 +1,81 @@
+version: '3.9'
+
+
+volumes:
+  static_volume:
+  postgres_data:
+#  certbot-certs:
+#  certbot-web:
+
+services:
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: production
+    image: jtombi/bonass_soccer:latest
+    container_name: bonass_soccer_django
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - ENVIRONMENT=PRODUCTION
+    depends_on:
+      - postgres
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    volumes:
+      - static_volume:/opt/app/staticfiles
+    ports:
+      - "8000:5000"
+    command: /start
+    cap_drop:
+      - SETGID
+      - SETUID
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: jtombi/fapfap_nginx:latest
+    volumes:
+      - static_volume:/opt/app/staticfiles
+      # - /certbot/certs:/etc/letsencrypt:ro
+      # - certbot-web:/vol/www
+      # - certbot-certs:/etc/letsencrypt
+    ports:
+      # - "80:80"
+      # - "443:443"
+      - "1337:80"
+    depends_on:
+      - django
+      # - certbot
+
+  postgres:
+    image: postgres:15-bullseye
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    env_file:
+      - ./.envs/.production/.postgres
+    volumes:
+      - ./docker/postgres/conf.d/postgresql.conf:/etc/postgresql/postgresql.conf:cached
+      - ./docker/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+      # - ./fixtures:/opt/app/fixtures:ro
+    ports:
+      - "5432:5432"
+
+#  certbot:
+#    build:
+#      context: .
+#      dockerfile: ./compose/production/certbot/Dockerfile
+#    # image: certbot/certbot
+#    image: jtombi/bonass_cerbot:latest
+#    container_name: certbot
+#    # entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 1; done'"
+#    volumes:
+#      - certbot-certs:/etc/letsencrypt  # Store Certbot keys
+#      - ./certbot/logs:/var/log/letsencrypt  # Store Certbot logs
+#      - certbot-web:/vol/www

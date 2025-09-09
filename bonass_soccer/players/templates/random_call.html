@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Django App</title>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Bienvenue au pseudo randomiseur Bonass soccer</h1>
+    <p>Liste des joueurs du {{ date }}.</p>
+    {% for player in players %}
+    <li>{{ player|safe }}</li>
+    {% endfor %}
+    <br>
+    <br>
+    <form method="post"  id="randomize_players" action="{% url 'randomize' %}">
+        {% csrf_token %}
+        <label>
+            Code secret
+            <input type="text" id="secret_code" name="secret_code" />
+        </label>
+        <button type="submit">Randomiser les equipes</button>
+    </form>
+    <div id="dynamic-content">
+        <!-- Dynamic content will be inserted here -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=bonass_soccer
+POSTGRES_USER=bonass_soccer
+POSTGRES_PASSWORD=e779e74e46b25d8254435ea89688628754721925b81632ac78b308f05910714d
+
+
+TZ=Europe/Paris
